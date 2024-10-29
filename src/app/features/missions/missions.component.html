@@ -1,0 +1,42 @@
+<div class="missions-container slide-in">
+  <div class="missions-header">
+    <h2>Daily Missions</h2>
+    <div class="filters">
+      <button 
+        *ngFor="let filter of filters" 
+        [class.active]="currentFilter === filter"
+        (click)="setFilter(filter)"
+        class="filter-btn">
+        {{filter}}
+      </button>
+    </div>
+  </div>
+
+  <div class="missions-grid">
+    <div 
+      *ngFor="let mission of filteredMissions" 
+      class="mission-card"
+      [class.completed]="mission.completed">
+      <div class="mission-content">
+        <div class="mission-header">
+          <span class="mission-type">{{mission.type}}</span>
+          <span class="mission-xp">+{{mission.xp}} XP</span>
+        </div>
+        <h3>{{mission.title}}</h3>
+        <p>{{mission.description}}</p>
+        <div class="mission-meta">
+          <span class="difficulty" [class]="mission.difficulty.toLowerCase()">
+            {{mission.difficulty}}
+          </span>
+          <span class="estimated-time">{{mission.estimatedTime}} min</span>
+        </div>
+      </div>
+      <button 
+        class="complete-btn" 
+        [class.completed]="mission.completed"
+        (click)="toggleMission(mission)">
+        {{mission.completed ? 'Completed' : 'Complete'}}
+      </button>
+    </div>
+  </div>
+</div>

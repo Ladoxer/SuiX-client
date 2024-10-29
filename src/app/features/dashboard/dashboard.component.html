@@ -1,0 +1,48 @@
+<div class="dashboard-container slide-in">
+  <section class="daily-overview">
+    <h2>Today's Progress</h2>
+    <div class="stats-grid">
+      <div class="stat-card">
+        <i class="fas fa-fire"></i>
+        <div class="stat-info">
+          <span class="stat-value">3/5</span>
+          <span class="stat-label">Tasks Completed</span>
+        </div>
+      </div>
+      <div class="stat-card">
+        <i class="fas fa-brain"></i>
+        <div class="stat-info">
+          <span class="stat-value">250</span>
+          <span class="stat-label">XP Earned Today</span>
+        </div>
+      </div>
+      <div class="stat-card">
+        <i class="fas fa-clock"></i>
+        <div class="stat-info">
+          <span class="stat-value">2.5h</span>
+          <span class="stat-label">Focus Time</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="current-missions">
+    <div class="section-header">
+      <h2>Active Missions</h2>
+      <a routerLink="/missions" class="view-all">View All</a>
+    </div>
+    <div class="missions-grid">
+      <div class="mission-card" *ngFor="let mission of activeMissions">
+        <div class="mission-header">
+          <span class="mission-type">{{mission.type}}</span>
+          <span class="mission-xp">+{{mission.xp}} XP</span>
+        </div>
+        <h3>{{mission.title}}</h3>
+        <p>{{mission.description}}</p>
+        <button class="complete-btn" [class.completed]="mission.completed">
+          {{mission.completed ? 'Completed' : 'Complete'}}
+        </button>
+      </div>
+    </div>
+  </section>
+</div>

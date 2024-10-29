@@ -1,0 +1,57 @@
+<div class="insights-container slide-in">
+  <div class="insights-header">
+    <h2>AI-Powered Insights</h2>
+    <p class="subtitle">Personalized recommendations based on your progress</p>
+  </div>
+
+  <div class="insights-grid">
+    <div class="insight-card analysis">
+      <h3>Weekly Analysis</h3>
+      <div class="analysis-content">
+        <div class="stat-item">
+          <span class="label">Productivity Score</span>
+          <div class="score">
+            <span class="value">85</span>
+            <span class="change positive">+5%</span>
+          </div>
+        </div>
+        <div class="stat-item">
+          <span class="label">Focus Areas</span>
+          <div class="focus-areas">
+            <span class="focus-tag">Health</span>
+            <span class="focus-tag">Learning</span>
+          </div>
+        </div>
+        <p class="analysis-text">
+          You've shown strong consistency in health-related missions. Consider increasing focus on career development tasks.
+        </p>
+      </div>
+    </div>
+
+    <div class="insight-card recommendations">
+      <h3>Personalized Recommendations</h3>
+      <div class="recommendations-list">
+        <div class="recommendation-item" *ngFor="let rec of recommendations">
+          <i [class]="rec.icon"></i>
+          <div class="recommendation-content">
+            <h4>{{rec.title}}</h4>
+            <p>{{rec.description}}</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="insight-card patterns">
+      <h3>Behavior Patterns</h3>
+      <div class="patterns-content">
+        <div class="pattern-item" *ngFor="let pattern of patterns">
+          <div class="pattern-header">
+            <i [class]="pattern.icon"></i>
+            <h4>{{pattern.title}}</h4>
+          </div>
+          <p>{{pattern.description}}</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

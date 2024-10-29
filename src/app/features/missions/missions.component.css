@@ -1,0 +1,129 @@
+.missions-container {
+  padding: 1rem;
+}
+
+.mission.s-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+}
+
+.filters {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.filter-btn {
+  padding: 0.5rem 1rem;
+  border: none;
+  border-radius: 0.5rem;
+  background: var(--surface-variant);
+  color: var(--text-primary);
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.filter-btn.active {
+  background: var(--primary);
+  color: white;
+}
+
+.missions-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 1.5rem;
+}
+
+.mission-card {
+  background: var(--surface);
+  border-radius: 1rem;
+  overflow: hidden;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  transition: transform 0.3s ease;
+}
+
+.mission-card:hover {
+  transform: translateY(-2px);
+}
+
+.mission-content {
+  padding: 1.5rem;
+}
+
+.mission-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.mission-type {
+  background: var(--surface-variant);
+  padding: 0.25rem 0.75rem;
+  border-radius: 1rem;
+  font-size: 0.875rem;
+}
+
+.mission-xp {
+  color: var(--primary);
+  font-weight: 600;
+}
+
+.mission-meta {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 1rem;
+}
+
+.difficulty {
+  padding: 0.25rem 0.75rem;
+  border-radius: 1rem;
+  font-size: 0.875rem;
+}
+
+.difficulty.easy {
+  background: #A8E6CF;
+  color: #2D6A4F;
+}
+
+.difficulty.medium {
+  background: #FFD3B6;
+  color: #9C4221;
+}
+
+.difficulty.hard {
+  background: #FFB6B6;
+  color: #9B2C2C;
+}
+
+.estimated-time {
+  color: var(--text-secondary);
+  font-size: 0.875rem;
+}
+
+.complete-btn {
+  width: 100%;
+  padding: 1rem;
+  border: none;
+  background: var(--primary);
+  color: white;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.complete-btn:hover {
+  background: var(--primary-variant);
+}
+
+.complete-btn.completed {
+  background: var(--surface-variant);
+  color: var(--text-secondary);
+  cursor: default;
+}
+
+.mission-card.completed {
+  opacity: 0.7;
+}

@@ -1,0 +1,23 @@
+<header class="header">
+  <div class="logo">
+    <h1>SuiX</h1>
+  </div>
+  <div class="progress-section">
+    <div class="level-indicator">
+      Level {{userLevel}}
+      <div class="progress-bar">
+        <div class="progress" [style.width.%]="progressPercentage"></div>
+      </div>
+    </div>
+    <div class="stats">
+      <div class="stat">
+        <span class="label">Streak</span>
+        <span class="value">{{streak}} days</span>
+      </div>
+      <div class="stat">
+        <span class="label">XP</span>
+        <span class="value">{{xp}}</span>
+      </div>
+    </div>
+  </div>
+</header>

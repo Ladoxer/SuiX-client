@@ -1,0 +1,100 @@
+<div class="goals-container slide-in">
+  <div class="goals-header">
+    <div class="header-content">
+      <h2>Your Goals</h2>
+      <p class="subtitle">Track and achieve your personal growth objectives</p>
+    </div>
+    <button class="add-goal-btn" (click)="showAddGoal = true">
+      <i class="fas fa-plus"></i> Add New Goal
+    </button>
+  </div>
+
+  <div class="goals-overview">
+    <div class="overview-card">
+      <div class="overview-icon">
+        <i class="fas fa-bullseye"></i>
+      </div>
+      <div class="overview-content">
+        <span class="overview-value">{{activeGoals.length}}</span>
+        <span class="overview-label">Active Goals</span>
+      </div>
+    </div>
+    <div class="overview-card">
+      <div class="overview-icon">
+        <i class="fas fa-check-circle"></i>
+      </div>
+      <div class="overview-content">
+        <span class="overview-value">{{completedGoals.length}}</span>
+        <span class="overview-label">Completed</span>
+      </div>
+    </div>
+    <div class="overview-card">
+      <div class="overview-icon">
+        <i class="fas fa-chart-line"></i>
+      </div>
+      <div class="overview-content">
+        <span class="overview-value">{{averageProgress}}%</span>
+        <span class="overview-label">Avg. Progress</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="goals-filters">
+    <button 
+      *ngFor="let category of categories"
+      [class.active]="currentCategory === category"
+      (click)="setCategory(category)"
+      class="filter-btn">
+      {{category}}
+    </button>
+  </div>
+
+  <div class="goals-grid">
+    <div *ngFor="let goal of filteredGoals" class="goal-card" [class]="goal.status">
+      <div class="goal-header">
+        <span class="goal-category">{{goal.category}}</span>
+        <div class="goal-actions">
+          <button class="action-btn" (click)="toggleGoalStatus(goal)">
+            <i [class]="goal.status === 'paused' ? 'fas fa-play' : 'fas fa-pause'"></i>
+          </button>
+          <button class="action-btn" (click)="editGoal(goal)">
+            <i class="fas fa-edit"></i>
+          </button>
+        </div>
+      </div>
+      
+      <h3>{{goal.title}}</h3>
+      <p class="goal-description">{{goal.description}}</p>
+      
+      <div class="goal-progress">
+        <div class="progress-bar">
+          <div class="progress" [style.width.%]="goal.progress"></div>
+        </div>
+        <span class="progress-text">{{goal.progress}}%</span>
+      </div>
+
+      <div class="goal-milestones">
+        <h4>Milestones</h4>
+        <div class="milestone-list">
+          <div *ngFor="let milestone of goal.milestones" class="milestone-item">
+            <label class="milestone-checkbox">
+              <input 
+                type="checkbox" 
+                [checked]="milestone.completed"
+                (change)="toggleMilestone(goal, milestone)">
+              <span class="checkmark"></span>
+            </label>
+            <span [class.completed]="milestone.completed">{{milestone.title}}</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="goal-footer">
+        <span class="deadline">
+          <i class="fas fa-calendar"></i>
+          Due {{goal.deadline | date}}
+        </span>
+      </div>
+    </div>
+  </div>
+</div>

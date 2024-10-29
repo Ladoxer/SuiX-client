@@ -1,0 +1,45 @@
+<div class="progress-container slide-in">
+  <div class="progress-header">
+    <h2>Your Growth Journey</h2>
+    <div class="time-filters">
+      <button 
+        *ngFor="let period of timePeriods" 
+        [class.active]="currentPeriod === period"
+        (click)="setPeriod(period)"
+        class="filter-btn">
+        {{period}}
+      </button>
+    </div>
+  </div>
+
+  <div class="charts-grid">
+    <div class="chart-card">
+      <h3>XP Growth</h3>
+      <canvas id="xpChart"></canvas>
+    </div>
+    <div class="chart-card">
+      <h3>Completed Missions</h3>
+      <canvas id="missionsChart"></canvas>
+    </div>
+    <div class="chart-card">
+      <h3>Focus Areas</h3>
+      <canvas id="focusChart"></canvas>
+    </div>
+  </div>
+
+  <div class="achievements-section">
+    <h3>Recent Achievements</h3>
+    <div class="achievements-grid">
+      <div class="achievement-card" *ngFor="let achievement of achievements">
+        <div class="achievement-icon">
+          <i [class]="achievement.icon"></i>
+        </div>
+        <div class="achievement-info">
+          <h4>{{achievement.title}}</h4>
+          <p>{{achievement.description}}</p>
+          <span class="achievement-date">{{achievement.date | date}}</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
