@@ -1,6 +1,8 @@
 import { CommonModule } from '@angular/common';
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { Chart } from 'chart.js/auto';
+import { ProgressService, ProgressData } from '../../core/services/progress.service';
+import { UserService } from '../../core/services/user.service';
 
 @Component({
   selector: 'app-progress',
@@ -9,116 +11,169 @@ import { Chart } from 'chart.js/auto';
   templateUrl: './progress.component.html',
   styleUrl: './progress.component.css'
 })
-export class ProgressComponent {
+export class ProgressComponent implements OnInit {
   timePeriods = ['Week', 'Month', 'Quarter', 'Year'];
-  currentPeriod = 'Week';
-  achievements = [
-    {
-      icon: 'fas fa-fire',
-      title: '7-Day Streak',
-      description: 'Completed daily missions for 7 consecutive days',
-      date: new Date('2024-01-15')
-    },
-    {
-      icon: 'fas fa-dumbbell',
-      title: 'Fitness Warrior',
-      description: 'Completed 10 workout sessions',
-      date: new Date('2024-01-14')
-    },
-    {
-      icon: 'fas fa-book',
-      title: 'Knowledge Seeker',
-      description: 'Finished 5 learning missions',
-      date: new Date('2024-01-13')
-    }
-  ];
+  currentPeriod = 'Month';
+  achievements: any[] = [];
+  isLoading = true;
+  error: string | null = null;
 
-  ngOnInit() {
-    this.initializeCharts();
+  private xpChart: any = null;
+  private missionsChart: any = null;
+  private focusChart: any = null;
+
+  constructor(
+    private progressService: ProgressService,
+    private userService: UserService
+  ) {}
+
+  ngOnInit(): void {
+    this.loadProgressData();
   }
 
-  setPeriod(period: string) {
+  setPeriod(period: string): void {
     this.currentPeriod = period;
-    // Update charts based on the selected period
-    this.updateCharts();
+    this.loadProgressData();
   }
 
-  private initializeCharts() {
-    this.createXPChart();
-    this.createMissionsChart();
-    this.createFocusChart();
+  private loadProgressData(): void {
+    const userId = this.userService.getCurrentUserId();
+    const periodMap: { [key: string]: 'week' | 'month' | 'all' } = {
+      'Week': 'week',
+      'Month': 'month',
+      'Quarter': 'all',
+      'Year': 'all'
+    };
+
+    this.isLoading = true;
+    this.progressService.getProgressData(userId, periodMap[this.currentPeriod]).subscribe({
+      next: (data) => {
+        this.updateCharts(data);
+        this.isLoading = false;
+      },
+      error: (err) => {
+        console.error('Error loading progress data:', err);
+        this.error = 'Failed to load progress data';
+        this.isLoading = false;
+      }
+    });
   }
 
-  private createXPChart() {
+  private updateCharts(data: ProgressData): void {
+    // Wait for DOM to be ready
+    setTimeout(() => {
+      this.createXPChart(data.xpGrowth);
+      this.createMissionsChart(data.missionsCompleted);
+      this.createFocusChart(data.focusAreas);
+    }, 100);
+  }
+
+  private createXPChart(xpData: { label: string; value: number }[]): void {
+    if (this.xpChart) {
+      this.xpChart.destroy();
+    }
+
     const ctx = document.getElementById('xpChart') as HTMLCanvasElement;
-    new Chart(ctx, {
+    if (!ctx) return;
+
+    this.xpChart = new Chart(ctx, {
       type: 'line',
       data: {
-        labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+        labels: xpData.map(d => d.label),
         datasets: [{
           label: 'XP Earned',
-          data: [100, 250, 180, 300, 200, 350, 250],
+          data: xpData.map(d => d.value),
           borderColor: '#4ECDC4',
-          tension: 0.4
+          backgroundColor: 'rgba(78, 205, 196, 0.1)',
+          tension: 0.4,
+          fill: true
         }]
       },
       options: {
         responsive: true,
+        maintainAspectRatio: true,
         plugins: {
           legend: {
             display: false
+          }
+        },
+        scales: {
+          y: {
+            beginAtZero: true
           }
         }
       }
     });
   }
 
-  private createMissionsChart() {
+  private createMissionsChart(missionData: { label: string; value: number }[]): void {
+    if (this.missionsChart) {
+      this.missionsChart.destroy();
+    }
+
     const ctx = document.getElementById('missionsChart') as HTMLCanvasElement;
-    new Chart(ctx, {
+    if (!ctx) return;
+
+    this.missionsChart = new Chart(ctx, {
       type: 'bar',
       data: {
-        labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+        labels: missionData.map(d => d.label),
         datasets: [{
           label: 'Completed Missions',
-          data: [4, 5, 3, 5, 4, 6, 4],
+          data: missionData.map(d => d.value),
           backgroundColor: '#4ECDC4'
         }]
       },
       options: {
         responsive: true,
+        maintainAspectRatio: true,
         plugins: {
           legend: {
             display: false
+          }
+        },
+        scales: {
+          y: {
+            beginAtZero: true
           }
         }
       }
     });
   }
 
-  private createFocusChart() {
+  private createFocusChart(focusData: { label: string; value: number }[]): void {
+    if (this.focusChart) {
+      this.focusChart.destroy();
+    }
+
     const ctx = document.getElementById('focusChart') as HTMLCanvasElement;
-    new Chart(ctx, {
+    if (!ctx) return;
+
+    this.focusChart = new Chart(ctx, {
       type: 'doughnut',
       data: {
-        labels: ['Health', 'Learning', 'Career', 'Mindfulness'],
+        labels: focusData.map(d => d.label),
         datasets: [{
-          data: [30, 25, 25, 20],
+          data: focusData.map(d => d.value),
           backgroundColor: [
             '#4ECDC4',
             '#FF6B6B',
             '#45B7AF',
-            '#FFD93D'
+            '#FFD93D',
+            '#95E1D3'
           ]
         }]
       },
       options: {
-        responsive: true
+        responsive: true,
+        maintainAspectRatio: true
       }
     });
   }
 
-  private updateCharts() {
-    // Update chart data based on the selected time period
+  ngOnDestroy(): void {
+    if (this.xpChart) this.xpChart.destroy();
+    if (this.missionsChart) this.missionsChart.destroy();
+    if (this.focusChart) this.focusChart.destroy();
   }
 }

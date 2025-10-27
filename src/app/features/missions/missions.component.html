@@ -13,10 +13,10 @@
   </div>
 
   <div class="missions-grid">
-    <div 
-      *ngFor="let mission of filteredMissions" 
+    <div
+      *ngFor="let mission of filteredMissions"
       class="mission-card"
-      [class.completed]="mission.completed">
+      [class.completed]="mission.status === 'completed'">
       <div class="mission-content">
         <div class="mission-header">
           <span class="mission-type">{{mission.type}}</span>
@@ -31,11 +31,11 @@
           <span class="estimated-time">{{mission.estimatedTime}} min</span>
         </div>
       </div>
-      <button 
-        class="complete-btn" 
-        [class.completed]="mission.completed"
+      <button
+        class="complete-btn"
+        [class.completed]="mission.status === 'completed'"
         (click)="toggleMission(mission)">
-        {{mission.completed ? 'Completed' : 'Complete'}}
+        {{mission.status === 'completed' ? 'Completed' : 'Complete'}}
       </button>
     </div>
   </div>

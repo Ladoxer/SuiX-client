@@ -97,4 +97,98 @@
       </div>
     </div>
   </div>
+
+  <!-- Add Goal Modal -->
+  <div class="modal-overlay" *ngIf="showAddGoal" (click)="closeModal()">
+    <div class="modal-content" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h2>Create New Goal</h2>
+        <button class="close-btn" (click)="closeModal()">
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+
+      <form class="goal-form" (ngSubmit)="createGoal()">
+        <div class="form-group">
+          <label for="title">Goal Title *</label>
+          <input
+            type="text"
+            id="title"
+            [(ngModel)]="newGoal.title"
+            name="title"
+            placeholder="e.g., Learn Angular Development"
+            required>
+        </div>
+
+        <div class="form-group">
+          <label for="description">Description *</label>
+          <textarea
+            id="description"
+            [(ngModel)]="newGoal.description"
+            name="description"
+            rows="3"
+            placeholder="Describe your goal in detail..."
+            required></textarea>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="category">Category *</label>
+            <select
+              id="category"
+              [(ngModel)]="newGoal.category"
+              name="category"
+              required>
+              <option value="">Select category</option>
+              <option value="health">Health</option>
+              <option value="learning">Learning</option>
+              <option value="career">Career</option>
+              <option value="mindfulness">Mindfulness</option>
+              <option value="personal">Personal</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="difficulty">Difficulty *</label>
+            <select
+              id="difficulty"
+              [(ngModel)]="newGoal.difficulty"
+              name="difficulty"
+              required>
+              <option value="">Select difficulty</option>
+              <option value="easy">Easy</option>
+              <option value="medium">Medium</option>
+              <option value="hard">Hard</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="deadline">Target Deadline *</label>
+          <input
+            type="date"
+            id="deadline"
+            [(ngModel)]="newGoal.deadline"
+            name="deadline"
+            [min]="minDate"
+            required>
+        </div>
+
+        <div class="form-actions">
+          <button type="button" class="btn-secondary" (click)="closeModal()">
+            Cancel
+          </button>
+          <button type="submit" class="btn-primary" [disabled]="isCreating">
+            <i class="fas" [class.fa-spinner]="isCreating" [class.fa-spin]="isCreating" [class.fa-plus]="!isCreating"></i>
+            {{ isCreating ? 'Creating...' : 'Create Goal' }}
+          </button>
+        </div>
+
+        <div class="ai-note">
+          <i class="fas fa-magic"></i>
+          <span>AI will automatically generate milestones and your first mission!</span>
+        </div>
+      </form>
+    </div>
+  </div>
 </div>

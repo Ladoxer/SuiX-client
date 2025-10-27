@@ -1,5 +1,8 @@
 import { CommonModule } from '@angular/common';
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
+import { MissionsService } from '../../core/services/missions.service';
+import { UserService } from '../../core/services/user.service';
+import { Mission } from '../../core/models/mission.model';
 
 @Component({
   selector: 'app-missions',
@@ -8,67 +11,78 @@ import { Component } from '@angular/core';
   templateUrl: './missions.component.html',
   styleUrl: './missions.component.css',
 })
-export class MissionsComponent {
-  filters = ['All', 'Health', 'Learning', 'Mindfulness', 'Career'];
+export class MissionsComponent implements OnInit {
+  filters = ['All', 'Health', 'Learning', 'Mindfulness', 'Career', 'Personal'];
   currentFilter = 'All';
+  missions: Mission[] = [];
+  isLoading = true;
+  error: string | null = null;
 
-  missions = [
-    {
-      type: 'Health',
-      xp: 100,
-      title: '30-Minute Exercise',
-      description:
-        'Complete a 30-minute workout session focusing on cardio and strength training.',
-      difficulty: 'Medium',
-      estimatedTime: 30,
-      completed: false,
-    },
-    {
-      type: 'Learning',
-      xp: 150,
-      title: 'Coding Practice',
-      description:
-        'Solve two algorithm challenges on your preferred coding platform.',
-      difficulty: 'Hard',
-      estimatedTime: 45,
-      completed: true,
-    },
-    {
-      type: 'Mindfulness',
-      xp: 75,
-      title: 'Meditation Session',
-      description:
-        'Practice mindful meditation for 10 minutes using guided techniques.',
-      difficulty: 'Easy',
-      estimatedTime: 10,
-      completed: false,
-    },
-    {
-      type: 'Career',
-      xp: 200,
-      title: 'Skill Development',
-      description:
-        'Complete one chapter of your current technical book or online course.',
-      difficulty: 'Medium',
-      estimatedTime: 60,
-      completed: false,
-    },
-  ];
+  constructor(
+    private missionsService: MissionsService,
+    private userService: UserService
+  ) {}
 
-  get filteredMissions() {
-    return this.currentFilter === 'All'
-      ? this.missions
-      : this.missions.filter((m) => m.type === this.currentFilter);
+  ngOnInit(): void {
+    this.loadMissions();
   }
 
-  setFilter(filter: string) {
+  get filteredMissions() {
+    if (this.currentFilter === 'All') {
+      return this.missions;
+    }
+    return this.missions.filter((m) =>
+      m.type.toLowerCase() === this.currentFilter.toLowerCase()
+    );
+  }
+
+  setFilter(filter: string): void {
     this.currentFilter = filter;
   }
 
-  toggleMission(mission: any) {
-    if (!mission.completed) {
-      mission.completed = true;
-      // Here we would typically call a service to update the mission status
+  toggleMission(mission: Mission): void {
+    if (mission.status === 'completed') {
+      return; // Already completed
     }
+
+    // Mark as completed
+    const completionData = {
+      actualTimeSpent: mission.estimatedTime,
+      userRating: 5,
+      difficultyRating: 3
+    };
+
+    this.missionsService.completeMission(mission._id, completionData).subscribe({
+      next: (updatedMission) => {
+        // Update the mission in the list
+        const index = this.missions.findIndex(m => m._id === mission._id);
+        if (index !== -1) {
+          this.missions[index] = updatedMission;
+        }
+        // Refresh user data to update XP
+        this.userService.refreshUser();
+      },
+      error: (err) => {
+        console.error('Error completing mission:', err);
+        this.error = 'Failed to complete mission';
+      }
+    });
+  }
+
+  private loadMissions(): void {
+    const userId = this.userService.getCurrentUserId();
+    this.isLoading = true;
+
+    this.missionsService.getMissions({ userId }).subscribe({
+      next: (missions) => {
+        this.missions = missions;
+        this.isLoading = false;
+      },
+      error: (err) => {
+        console.error('Error loading missions:', err);
+        this.error = 'Failed to load missions';
+        this.isLoading = false;
+      }
+    });
   }
 }

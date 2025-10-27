@@ -119,3 +119,145 @@
   color: var(--text-secondary);
   cursor: default;
 }
+
+/* Error Message */
+.error-message {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  padding: 3rem 2rem;
+  background: var(--surface);
+  border-radius: 1rem;
+  border: 2px dashed var(--secondary);
+  text-align: center;
+}
+
+.error-message i {
+  font-size: 3rem;
+  color: var(--secondary);
+}
+
+.error-message p {
+  color: var(--text-secondary);
+  margin: 0;
+}
+
+.retry-btn {
+  padding: 0.75rem 1.5rem;
+  background: var(--primary);
+  color: white;
+  border: none;
+  border-radius: 0.5rem;
+  font-weight: 500;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  transition: all 0.3s ease;
+}
+
+.retry-btn:hover {
+  background: var(--primary-variant);
+  transform: translateY(-2px);
+}
+
+/* Mobile First Responsive Styles */
+@media (max-width: 1024px) {
+  .stats-grid {
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  }
+
+  .missions-grid {
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  }
+}
+
+@media (max-width: 768px) {
+  .dashboard-container {
+    gap: 1.5rem;
+    padding: 0.5rem;
+  }
+
+  .daily-overview {
+    padding: 1rem;
+  }
+
+  .stats-grid {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+
+  .stat-card {
+    padding: 1rem;
+  }
+
+  .stat-card i {
+    font-size: 1.25rem;
+  }
+
+  .stat-value {
+    font-size: 1.1rem;
+  }
+
+  .section-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+  }
+
+  .section-header h2 {
+    font-size: 1.25rem;
+  }
+
+  .missions-grid {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+
+  .mission-card {
+    padding: 1.25rem;
+  }
+
+  .mission-card h3 {
+    font-size: 1rem;
+  }
+
+  .mission-card p {
+    font-size: 0.875rem;
+  }
+
+  .error-message {
+    padding: 2rem 1rem;
+  }
+
+  .error-message i {
+    font-size: 2rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .dashboard-container {
+    padding: 0.25rem;
+  }
+
+  .daily-overview, .current-missions {
+    padding: 0.75rem;
+  }
+
+  .stat-card {
+    padding: 0.875rem;
+  }
+
+  .mission-card {
+    padding: 1rem;
+  }
+
+  .section-header h2 {
+    font-size: 1.1rem;
+  }
+
+  .view-all {
+    font-size: 0.875rem;
+  }
+}

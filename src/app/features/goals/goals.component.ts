@@ -1,23 +1,9 @@
 import { CommonModule } from '@angular/common';
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-
-interface Goal {
-  id: string;
-  title: string;
-  description: string;
-  category: string;
-  deadline: Date;
-  progress: number;
-  milestones: Milestone[];
-  status: 'active' | 'completed' | 'paused';
-}
-
-interface Milestone {
-  id: string;
-  title: string;
-  completed: boolean;
-}
+import { GoalsService } from '../../core/services/goals.service';
+import { UserService } from '../../core/services/user.service';
+import { Goal, Milestone, CreateGoalDto } from '../../core/models/goal.model';
 
 @Component({
   selector: 'app-goals',
@@ -26,66 +12,42 @@ interface Milestone {
   templateUrl: './goals.component.html',
   styleUrl: './goals.component.css',
 })
-export class GoalsComponent {
+export class GoalsComponent implements OnInit {
   showAddGoal = false;
-  categories = ['All', 'Health', 'Career', 'Learning', 'Personal'];
+  categories = ['All', 'Health', 'Career', 'Learning', 'Personal', 'Mindfulness'];
   currentCategory = 'All';
+  goals: Goal[] = [];
+  isLoading = true;
+  isCreating = false;
+  error: string | null = null;
+  minDate: string;
 
-  goals: Goal[] = [
-    {
-      id: '1',
-      title: 'Master Angular Development',
-      description:
-        'Become proficient in Angular by building complex applications and understanding advanced concepts.',
-      category: 'Career',
-      deadline: new Date('2024-06-30'),
-      progress: 45,
-      status: 'active',
-      milestones: [
-        {
-          id: '1-1',
-          title: 'Complete Angular fundamentals course',
-          completed: true,
-        },
-        { id: '1-2', title: 'Build a real-world project', completed: false },
-        {
-          id: '1-3',
-          title: 'Learn NgRx for state management',
-          completed: false,
-        },
-      ],
-    },
-    {
-      id: '2',
-      title: 'Improve Physical Fitness',
-      description:
-        'Achieve better health and fitness through regular exercise and proper nutrition.',
-      category: 'Health',
-      deadline: new Date('2024-12-31'),
-      progress: 30,
-      status: 'active',
-      milestones: [
-        { id: '2-1', title: 'Establish workout routine', completed: true },
-        { id: '2-2', title: 'Run 5K without stopping', completed: false },
-        { id: '2-3', title: 'Reach target weight', completed: false },
-      ],
-    },
-    {
-      id: '3',
-      title: 'Learn Machine Learning',
-      description:
-        'Gain expertise in ML concepts and implement AI-powered features.',
-      category: 'Learning',
-      deadline: new Date('2024-09-30'),
-      progress: 15,
-      status: 'active',
-      milestones: [
-        { id: '3-1', title: 'Complete Python for ML course', completed: true },
-        { id: '3-2', title: 'Implement first ML model', completed: false },
-        { id: '3-3', title: 'Deploy ML model to production', completed: false },
-      ],
-    },
-  ];
+  newGoal: {
+    title: string;
+    description: string;
+    category: '' | 'health' | 'learning' | 'career' | 'mindfulness' | 'personal';
+    deadline: string;
+    difficulty: '' | 'easy' | 'medium' | 'hard';
+  } = {
+    title: '',
+    description: '',
+    category: '',
+    deadline: '',
+    difficulty: ''
+  };
+
+  constructor(
+    private goalsService: GoalsService,
+    private userService: UserService
+  ) {
+    // Set minimum date to today
+    const today = new Date();
+    this.minDate = today.toISOString().split('T')[0];
+  }
+
+  ngOnInit(): void {
+    this.loadGoals();
+  }
 
   get filteredGoals() {
     return this.currentCategory === 'All'
@@ -102,33 +64,116 @@ export class GoalsComponent {
   }
 
   get averageProgress() {
+    if (this.goals.length === 0) return 0;
     const total = this.goals.reduce((sum, goal) => sum + goal.progress, 0);
     return Math.round(total / this.goals.length);
   }
 
-  setCategory(category: string) {
+  setCategory(category: string): void {
     this.currentCategory = category;
   }
 
-  toggleGoalStatus(goal: Goal) {
-    goal.status = goal.status === 'active' ? 'paused' : 'active';
+  toggleGoalStatus(goal: Goal): void {
+    const newStatus = goal.status === 'active' ? 'paused' : 'active';
+    this.goalsService.updateGoal(goal._id, { status: newStatus }).subscribe({
+      next: (updatedGoal) => {
+        const index = this.goals.findIndex(g => g._id === goal._id);
+        if (index !== -1) {
+          this.goals[index] = updatedGoal;
+        }
+      },
+      error: (err) => {
+        console.error('Error updating goal status:', err);
+        this.error = 'Failed to update goal status';
+      }
+    });
   }
 
-  editGoal(goal: Goal) {
-    // Implement edit functionality
+  editGoal(goal: Goal): void {
+    // TODO: Implement edit functionality with modal
+    console.log('Edit goal:', goal);
   }
 
-  toggleMilestone(goal: Goal, milestone: Milestone) {
-    milestone.completed = !milestone.completed;
-    this.updateGoalProgress(goal);
+  toggleMilestone(goal: Goal, milestone: Milestone): void {
+    this.goalsService.toggleMilestone(goal._id, milestone.id).subscribe({
+      next: (updatedGoal) => {
+        const index = this.goals.findIndex(g => g._id === goal._id);
+        if (index !== -1) {
+          this.goals[index] = updatedGoal;
+        }
+      },
+      error: (err) => {
+        console.error('Error toggling milestone:', err);
+        this.error = 'Failed to update milestone';
+      }
+    });
   }
 
-  private updateGoalProgress(goal: Goal) {
-    const completed = goal.milestones.filter((m) => m.completed).length;
-    goal.progress = Math.round((completed / goal.milestones.length) * 100);
+  closeModal(): void {
+    this.showAddGoal = false;
+    // Reset form
+    this.newGoal = {
+      title: '',
+      description: '',
+      category: '',
+      deadline: '',
+      difficulty: ''
+    };
+  }
 
-    if (goal.progress === 100) {
-      goal.status = 'completed';
+  createGoal(): void {
+    // Validate form
+    if (!this.newGoal.title || !this.newGoal.description || !this.newGoal.category ||
+        !this.newGoal.deadline || !this.newGoal.difficulty) {
+      this.error = 'Please fill in all required fields';
+      return;
     }
+
+    this.isCreating = true;
+    this.error = null;
+
+    const userId = this.userService.getCurrentUserId();
+    const goalData = {
+      title: this.newGoal.title,
+      description: this.newGoal.description,
+      category: this.newGoal.category as 'health' | 'learning' | 'career' | 'mindfulness' | 'personal',
+      deadline: new Date(this.newGoal.deadline),
+      difficulty: this.newGoal.difficulty as 'easy' | 'medium' | 'hard'
+    };
+
+    this.goalsService.createGoal(userId, goalData).subscribe({
+      next: (createdGoal) => {
+        console.log('Goal created successfully:', createdGoal);
+        // Add new goal to the list
+        this.goals.unshift(createdGoal);
+        // Close modal and reset form
+        this.closeModal();
+        this.isCreating = false;
+        // Show success message
+        alert('Goal created successfully! AI has generated milestones and your first mission.');
+      },
+      error: (err) => {
+        console.error('Error creating goal:', err);
+        this.error = 'Failed to create goal. Please try again.';
+        this.isCreating = false;
+      }
+    });
+  }
+
+  private loadGoals(): void {
+    const userId = this.userService.getCurrentUserId();
+    this.isLoading = true;
+
+    this.goalsService.getGoals(userId).subscribe({
+      next: (goals) => {
+        this.goals = goals;
+        this.isLoading = false;
+      },
+      error: (err) => {
+        console.error('Error loading goals:', err);
+        this.error = 'Failed to load goals';
+        this.isLoading = false;
+      }
+    });
   }
 }

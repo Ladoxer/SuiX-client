@@ -1,22 +1,33 @@
-<nav class="sidenav">
+<!-- Hamburger Button (Mobile Only) -->
+<button class="hamburger-btn" (click)="toggleMenu()" [class.open]="isMenuOpen">
+  <span></span>
+  <span></span>
+  <span></span>
+</button>
+
+<!-- Mobile Overlay -->
+<div class="mobile-overlay" *ngIf="isMenuOpen && isMobile" (click)="closeMenu()"></div>
+
+<!-- Sidenav -->
+<nav class="sidenav" [class.mobile-open]="isMenuOpen">
   <div class="nav-items">
-    <a routerLink="/dashboard" routerLinkActive="active" class="nav-item">
+    <a routerLink="/dashboard" routerLinkActive="active" class="nav-item" (click)="closeMenu()">
       <i class="fas fa-home"></i>
       <span>Dashboard</span>
     </a>
-    <a routerLink="/missions" routerLinkActive="active" class="nav-item">
+    <a routerLink="/missions" routerLinkActive="active" class="nav-item" (click)="closeMenu()">
       <i class="fas fa-tasks"></i>
       <span>Daily Missions</span>
     </a>
-    <a routerLink="/progress" routerLinkActive="active" class="nav-item">
+    <a routerLink="/progress" routerLinkActive="active" class="nav-item" (click)="closeMenu()">
       <i class="fas fa-chart-line"></i>
       <span>Progress</span>
     </a>
-    <a routerLink="/insights" routerLinkActive="active" class="nav-item">
+    <a routerLink="/insights" routerLinkActive="active" class="nav-item" (click)="closeMenu()">
       <i class="fas fa-brain"></i>
       <span>AI Insights</span>
     </a>
-    <a routerLink="/goals" routerLinkActive="active" class="nav-item">
+    <a routerLink="/goals" routerLinkActive="active" class="nav-item" (click)="closeMenu()">
       <i class="fas fa-bullseye"></i>
       <span>Goals</span>
     </a>
